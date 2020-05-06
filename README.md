@@ -34,7 +34,7 @@ The project is of secure chat.
 
 ### Common things
 
-Though the message formats are mentioned in this submission report, these can be checked in the source file called `AppConfig.java` directly. Unless otherwise stated, all the binary data such as encrypted data, keys, signatures, HMAC tags, etc. are encoded into base64 before transmitted into the network. In this project, binary data without any encoding are never sent/received. It ensures better debuggability since sent/received messages can be logged easily.
+Though the message formats are mentioned here, these can be checked in the source file called `AppConfig.java` directly. Unless otherwise stated, all the binary data such as encrypted data, keys, signatures, HMAC tags, etc. are encoded into base64 before transmitted into the network. In this project, binary data without any encoding are never sent/received. It ensures better debuggability since sent/received messages can be logged easily.
 
 ### Authentication (sign up)
 
