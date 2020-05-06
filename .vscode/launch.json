@@ -1,0 +1,89 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Server",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-s",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C1",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C1",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C2",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C2",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C3",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C3",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C4",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C4",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C5",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C5",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C6",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C6",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C7",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C7",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        },
+        {
+            "type": "java",
+            "name": "Client C8",
+            "request": "launch",
+            "mainClass": "com.arnobpaul.Main",
+            "args": "-c C8",
+            "cwd" : "${workspaceFolder}/data",
+            "vmArgs": "-Djava.util.logging.config.file=\"${workspaceFolder}/logging.properties\""
+        }
+    ]
+}
