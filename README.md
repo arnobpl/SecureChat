@@ -14,7 +14,7 @@ The project is of secure chat.
 
 5.  **Trust:** In secure chat, no clients need to trust the service provider to ensure all the above-mentioned security guarantees. Even if the service provider does some malicious actions (such as sending a fake message impersonating a specific client), the clients can easily detect these actions. So the message communication between any two clients always ensures all the mentioned security guarantees regardless of the behavior of the service provider (i.e., malicious server or legitimate server).
 
-6.  **Forward secrecy:** Secure chat also includes forward secrecy. If an adversary (eavesdropper) records all the encrypted communication between two clients in the network traffic, and later somehow steal the private keys of one or both of the clients, then the adversary cannot decrypt the recorded encrypted messages. Even if the eavesdropper somehow manages to steal a shared secret key used in the message communication, it still only get access to a very small portion of messages. In this way, secure chat provides forward secrecy.
+6.  **Forward secrecy:** Secure chat also includes forward secrecy. If an adversary (eavesdropper) records all the encrypted communication between two clients in the network traffic, and later somehow steal the private keys of one or both of the clients, then the adversary cannot decrypt the recorded encrypted messages. Even if the eavesdropper somehow manages to steal a shared secret key used in the message communication, it will only get access to a very small portion of messages, but not all the past messages. In this way, secure chat provides forward secrecy.
 
 ## Security model and objectives
 
@@ -40,7 +40,7 @@ Though the message formats are mentioned here, these can be checked in the sourc
 
 Every client needs to sign up on a server for the first time. The goal is to store every client’s public key in the server so that it can distribute the public key of the client whenever needed by some clients (i.e., before initiating a message communication). The server authenticates the public key of the new client by checking if the client possesses the corresponding private key of the given public key. But it is not important to authenticate the public keys by the server under the security model. Anyways, the following things happen during sign up:
 
-1.  The client generates a pair of 2048-bit RSA PKCS\#1  keys (public key and private key).
+1.  The client generates a pair of 2048-bit RSA PKCS\#1  keys (public key and private key).
 
 2.  The client sends the public key to the server along with the client’s name for requesting signup. Message format: `SIGNUP <Client_Name> <Client_Public_Key>`
 
@@ -58,11 +58,11 @@ Every client needs to sign up on a server for the first time. The goal is to sto
 
 In this step, the goal is to tell the service provider that the client is active so that the server can pass messages from other clients being able to communicate with the client via the server. The server authenticates the client during login to verify that the client possesses the corresponding private key of the saved public key. But the verification process is not important to ensure the project’s security objectives. The verification is just for convenience (connecting via the server) rather than ensuring security. The following things happen during login:
 
-1.  The client sends its client ID to a request for login to the server. Message format: `LOGIN <Client_ID>`
+1.  The client sends its client ID to a request for logging in to the server. Message format: `LOGIN <Client_ID>`
 
 2.  The server replies a cryptographically random 64-bit nonce (`long`) and the current timestamp milliseconds (`long`) to the client. Message format: `LOGIN_NONCE <Nonce> <Timestamp>`
 
-3.  The client replies to the server with the RSA signature signed to the text combining the nonce and the timestamp (`%d %d`) with the client’s private key. The signature scheme includes SHA-256 and the RSA encryption algorithm as defined in the OSI Interoperability Workshop, using the padding conventions described in PKCS\#1 . Message format: `LOGIN_ACCEPT <Signature>`
+3.  The client replies to the server with the RSA signature signed to the text combining the nonce and the timestamp (`%d %d`) with the client’s private key. The signature scheme includes SHA-256 and the RSA encryption algorithm as defined in the OSI Interoperability Workshop, using the padding conventions described in PKCS\#1. Message format: `LOGIN_ACCEPT <Signature>`
 
 4.  The server verifies the signature with the client’s public key.
 
@@ -75,23 +75,23 @@ Suppose, `Client_A` wants to communicate with `Client_B`. The following things w
 
 1.  After a successful login of `Client_A`, it sends a request for initiating the communication with `Client_B` using the `Client_B`’s client ID to the server. Message format: `SEND_START <Client_ID>`  
     By the current design, it is possible to send any arbitrary message to any other clients via the server even without any initialization. The server trivially passes the data from one client to another client. Message format in this case: `SEND <Client_ID> <Data>`  
-    There is one thing to clarify. The subsequent message formats after Step 2 are actually the part of the `<data>` field. The server does not care about what types of messages in the `<data>` field are sent.
+    There is one thing to clarify. The subsequent message formats after Step 2 are actually the part of the `<data>` field. The server does not care about what types of messages in the `<data>` field are sent.
 
 2.  After receiving the request for initiating the communication, the server replies to `Client_A` with the public key of `Client_B`. The server also sends a message to `Client_B` (if logged in) with the public key of `Client_A`. Message format for the both cases: `SEND_INVITE <Client_ID> <Client_Public_Key>`  
-    If `Client_B` is not logged in, then server informs it to `Client_A`. Message format: `SEND_FAILURE <Client_ID>`
+    If `Client_B` is not logged in, then the server informs it to `Client_A`. Message format: `SEND_FAILURE <Client_ID>`
 
-3.  If `Client_A` trusts the public key of `Client_B` provided by the server (or an attacker in a MITM attack), `Client_A` will continue executing the next steps. The similar things happen to `Client_B`. There is a trust list in each client to check for the trust of a client. The trust table creation is done using the statement:  
+3.  If `Client_A` trusts the public key of `Client_B` provided by the server (or an attacker in a MITM attack), `Client_A` will continue executing the next steps. Similar things happen to `Client_B`. There is a trust list in each client to check for the trust of a client. The trust table creation is done using the statement:  
     `CREATE TABLE trust_list ( id integer PRIMARY KEY, public_key text NOT NULL );`
 
 4.  Both of the clients will generate a symmetric key using the Diffie-Hellman key exchange through the server (i.e., no client-to-client connection). The key will be used as a seed to a specific pseudorandom generator (PRG) used by all the clients in the system. PRG will generate two keys from the shared seed – one for AES encryption, the other for integrity using HMAC. The details are in the following steps.
 
-5.  In the very first step of the message communication, there is no shared secret key generated. So, to ensure the Diffie-Hellman key exchange without any key alteration, each client uses RSA with SHA-256 using the padding conventions described in PKCS\#1  to sign/verify the public portion of Diffie-Hellman key pairs. The Diffie-Hellman key size is 2048 bits. Each client includes its sequence number which is also in the text to sign so that send the same message twice will be invalidated, as the signature will not match. It will prevent the replay attack. Here are the pair of message formats for this step:
+5.  In the very first step of the message communication, there is no shared secret key generated. So, to ensure the Diffie-Hellman key exchange without any key alteration, each client uses RSA with SHA-256 using the padding conventions described in PKCS\#1  to sign/verify the public portion of Diffie-Hellman key pairs. The Diffie-Hellman key size is 2048 bits. Each client includes its sequence number which is also in the text to sign so that send the same message twice will be invalidated, as the signature will not match. It will prevent the replay attack. Here are the pair of message formats for this step:
     
       - `DATA_DH_START <Signature> <Seq_Num> <Client_DH_Public_Key>`
     
       - `DATA_DH_START_ACCEPT <Signature> <Seq_Num> <Client_DH_Public_Key>`
 
-6.  From the above step, each client can generate a secret key shared by both of the clients. Using the shared secret key and the PRG, both clients will generate two keys – one for encryption, another one for HMAC tags. Every message includes the ciphertext from the chat message, the sequence number, the valid tag using HMAC for integrity check. More specifically, the encryption algorithm is AES-256 with CBC mode and PKCS\#5 padding . The algorithm for HMAC tags is the HMAC-SHA-256 keyed hashing algorithm for message authentication . So, PRG will take the input of the 2048-bit shared secret key from Diffie-Hellman key exchange and provide the output of 256-bit key for AES-256 encryption and 2048-bit key for HMAC-SHA-256 tagging. Message format: `DATA Enc(<HMAC> <Seq_Num> <Message>)`
+6.  From the above step, each client can generate a secret key shared by both of the clients. Using the shared secret key and the PRG, both clients will generate two keys – one for encryption, another one for HMAC tags. Every message includes the ciphertext from the chat message, the sequence number, the valid tag using HMAC for integrity check. More specifically, the encryption algorithm is AES-256 with CBC mode and PKCS\#5 padding. The algorithm for HMAC tags is the HMAC-SHA-256 keyed hashing algorithm for message authentication. So, PRG will take the input of the 2048-bit shared secret key from Diffie-Hellman key exchange and provide the output of 256-bit key for AES-256 encryption and 2048-bit key for HMAC-SHA-256 tagging. Message format: `DATA Enc(<HMAC> <Seq_Num> <Message>)`
 
 7.  One of the clients randomly-chosen periodically (and randomly) requests to the other client for renewing the two keys (i.e., one for encryption, the other for integrity). The other client must accept the request and both of the clients generate a new shared seed using Diffie-Hellman key exchange. PRG will renew the two keys from the shared seed. Renewing the keys will also reset the sequence numbers of both clients. In this way, no client needs to store the other client’s valid sequence number permanently because a valid sequence number always starts from 0 after every Diffie-Hellman key exchange.  
     But here is an important difference from the initial key exchange. Here instead of using the RSA signature, both of the clients use HMAC tags to exchange the public portion of Diffie-Hellman key pairs without any alteration. Here are the pair of message formats for this step:
